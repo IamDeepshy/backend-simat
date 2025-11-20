@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../Middleware/auth");
 
-const SECRET_KEY = "RAHASIA_SUPER_UNIK";
+const SECRET_KEY = process.env.SECRET_KEY;
 
 // Dummy users (sementara, sebelum pakai DB)
 const users = [
@@ -63,7 +63,7 @@ router.get("/me", authMiddleware, (req, res) => {
   res.json({
     loggedIn: true,
     userId: req.user.id,
-    username: user.username,  // ⬅️ tambah ini
+    username: user.username,
     role: req.user.role,
   });
 });
