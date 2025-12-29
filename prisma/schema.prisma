@@ -13,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// table user
 model user {
   id          Int      @id @default(autoincrement())
   username    String   @unique
@@ -22,7 +23,7 @@ model user {
   updated_at  DateTime @default(now()) @updatedAt
 }
 
-
+// table task_management
 model task_management {
   id          Int      @id @default(autoincrement())
   id_suites   String
@@ -35,6 +36,7 @@ model task_management {
   updated_at  DateTime @default(now()) @updatedAt
 }
 
+// table suites
 model suites {
   id          Int      @id @default(autoincrement())
   name        String
@@ -43,4 +45,37 @@ model suites {
   record      String
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now()) @updatedAt
+}
+
+model test_run {
+  id          Int      @id @default(autoincrement())
+  scope       String
+  scopeValue  String
+  totalPass   Int
+  totalFail   Int
+  status      String
+  allureUrl   String?
+  executedAt  DateTime
+  createdAt   DateTime @default(now())
+
+  specs      test_specs[]
+
+  @@unique([scope, scopeValue])
+}
+
+model test_specs {
+  id            Int       @id @default(autoincrement())
+  testCaseId    String    @unique
+  suiteName     String
+  testName      String
+  status        String
+  durationMs    Int
+  errorMessage String? @db.Text
+  screenshotUrl String?
+  lastRunAt     DateTime
+  runId         Int
+
+  run           test_run  @relation(fields: [runId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }

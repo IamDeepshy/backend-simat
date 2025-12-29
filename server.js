@@ -4,12 +4,15 @@ require("dotenv").config()
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const authRoutes = require("./Routes/auth");
-const protectedRoutes = require("./Routes/protected");
+const authRoutes = require("./src/Routes/auth");
+const protectedRoutes = require("./src/Routes/protected");
+const testRunRoutes = require("./src/Routes/testRun");
+const allureTestRoutes = require("./src/Routes/allureTest");
+const allureRoutes = require("./src/Routes/allureRoutes");
+const jenkinsRoutes = require("./src/Routes/jenkinsRoutes");
+const groupTestcaseRoutes = require("./src/Routes/groupCaseRoutes");
 
 const app = express();
-
-app.listen(3000, () => console.log("SERVER LISTENING!!"));
 
 app.use(cors({
     origin: "http://localhost:5173",
@@ -27,6 +30,12 @@ app.get("/", (req, res) => {
 // REGISTER ROUTES 
 app.use("/auth", authRoutes);
 app.use("/api", protectedRoutes);
+app.use("/api", testRunRoutes); 
+app.use("/api", allureTestRoutes);
+app.use("/api", allureRoutes);
+app.use("/api", jenkinsRoutes);
+app.use("/api", groupTestcaseRoutes);
+
 
 
 // LISTEN
