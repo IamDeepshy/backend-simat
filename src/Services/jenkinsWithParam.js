@@ -3,19 +3,25 @@ const axios = require("axios");
 const JENKINS_BASE_URL = "http://localhost:8080";
 const JOB_NAME = "eksekusi-ulang";
 
-// pakai user + api token Jenkins
 const JENKINS_USER = process.env.JENKINS_USER;
 const JENKINS_TOKEN = process.env.JENKINS_TOKEN;
 
+function normalizeSpecPath(specPath) {
+  if (!specPath) return null;
+  return specPath.split("#")[0];
+}
+
 async function triggerRerunSpec(specPath) {
+  const cleanSpec = normalizeSpecPath(specPath);
+
   const url = `${JENKINS_BASE_URL}/job/${JOB_NAME}/buildWithParameters`;
 
-  return axios.post(
+  const response = await axios.post(
     url,
     null,
     {
       params: {
-        SPEC: specPath
+        SPEC: cleanSpec
       },
       auth: {
         username: JENKINS_USER,
@@ -23,6 +29,16 @@ async function triggerRerunSpec(specPath) {
       }
     }
   );
+
+  /**
+   * Jenkins mengirim lokasi queue di header untuk track di
+   */
+  const queueUrl = response.headers.location;
+
+  return {
+    queueUrl,
+    spec: cleanSpec
+  };
 }
 
 module.exports = { triggerRerunSpec };

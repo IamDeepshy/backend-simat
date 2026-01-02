@@ -3,8 +3,8 @@ const axios = require('axios')
 const JENKINS_BASE_URL = 'http://localhost:8080'
 const JOB_NAME = 'eksekusi-ulang'
 const AUTH = {
-  username: 'nadhif',
-  password: '1176ff5d99c821188b57dfa71b61257bcd'
+  username: process.env.JENKINS_USER,
+  password: process.env.JENKINS_TOKEN,
 }
 
 async function getLatestAllureSummary() {

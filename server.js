@@ -3,6 +3,7 @@ console.log("SERVER FILE LOADED!");
 require("dotenv").config()
 const express = require("express");
 const cors = require("cors");
+const path = require("path");   
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./src/Routes/auth");
 const protectedRoutes = require("./src/Routes/protected");
@@ -21,6 +22,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 // test route
 app.get("/", (req, res) => {
@@ -35,6 +37,7 @@ app.use("/api", allureTestRoutes);
 app.use("/api", allureRoutes);
 app.use("/api", jenkinsRoutes);
 app.use("/api", groupTestcaseRoutes);
+app.use("/screenshots", express.static(path.join(__dirname, "screenshots")));
 
 
 

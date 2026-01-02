@@ -1,4 +1,7 @@
 const { triggerRerunSpec } = require("../services/jenkinsWithParam");
+const { resolveQueue } = require("../services/jenkinsQueueResolver");
+const { getBuildProgress } = require("../services/jenkinsProgress");
+const { get } = require("../Routes/jenkinsRoutes");
 
 async function rerunSpec(req, res) {
   try {
@@ -8,16 +11,46 @@ async function rerunSpec(req, res) {
       return res.status(400).json({ message: "SPEC wajib diisi" });
     }
 
-    await triggerRerunSpec(spec);
+    //  ambil hasil trigger Jenkins
+    const { queueUrl, spec: cleanSpec } = await triggerRerunSpec(spec);
 
-    res.json({
+    return res.json({
       message: "Rerun spec berhasil ditrigger",
-      spec
+      spec: cleanSpec,
+      queueUrl, 
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Gagal trigger Jenkins" });
+    console.error("Rerun Jenkins error:", err.message);
+    return res.status(500).json({ message: "Gagal trigger Jenkins" });
   }
 }
 
-module.exports = { rerunSpec };
+async function resolveQueueBuild(req, res) {
+  try {
+    const { queueUrl } = req.query;
+
+    if (!queueUrl) {
+      return res.status(400).json({ message: "queueUrl wajib" });
+    }
+
+    const result = await resolveQueue(queueUrl);
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+}
+
+async function getBuildProgressController(req, res) {
+  try {
+    const { buildNumber } = req.params;
+    const data = await getBuildProgress(buildNumber);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Gagal ambil progress Jenkins" });
+  }
+}
+
+module.exports = { rerunSpec, resolveQueueBuild, getBuildProgressController };

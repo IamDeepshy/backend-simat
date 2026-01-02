@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,69 +7,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// table user
 model user {
-  id          Int      @id @default(autoincrement())
-  username    String   @unique
-  password    String
-  role        String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  role       String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 }
 
-// table task_management
 model task_management {
-  id          Int      @id @default(autoincrement())
-  id_suites   String
-  title       String
-  assignDev   String
-  priority    String
-  status      String
-  notes       String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         Int      @id @default(autoincrement())
+  id_suites  String
+  title      String
+  assignDev  String
+  priority   String
+  status     String
+  notes      String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 }
 
-// table suites
 model suites {
-  id          Int      @id @default(autoincrement())
-  name        String
-  status      String
-  errorMsg    String
-  record      String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         Int      @id @default(autoincrement())
+  name       String
+  status     String
+  errorMsg   String
+  record     String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 }
 
 model test_run {
-  id          Int      @id @default(autoincrement())
-  scope       String
-  scopeValue  String
-  totalPass   Int
-  totalFail   Int
-  status      String
-  allureUrl   String?
-  executedAt  DateTime
-  createdAt   DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  scope      String
+  scopeValue String
+  totalPass  Int
+  totalFail  Int
+  status     String
+  allureUrl  String?
+  executedAt DateTime
+  createdAt  DateTime @default(now())
 
-  specs      test_specs[]
-
-  @@unique([scope, scopeValue])
+  @@index([scope, scopeValue])
 }
 
 model test_specs {
-  id            Int       @id @default(autoincrement())
-  testCaseId    String    @unique
+  id            Int      @id @default(autoincrement())
+  testCaseId    String   @unique
   suiteName     String
   testName      String
   status        String
   durationMs    Int
-  errorMessage String? @db.Text
+  errorMessage  String?  @db.Text
   screenshotUrl String?
   lastRunAt     DateTime
   runId         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  specPath      String?  @db.VarChar(255)
 
-  run           test_run  @relation(fields: [runId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  @@index([runId], map: "test_specs_runId_fkey")
+  @@unique([specPath, testName])
 }
