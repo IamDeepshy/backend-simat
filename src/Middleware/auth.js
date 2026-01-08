@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // { id: 1, iat: ..., exp: ... }
+    req.user = decoded; // { berisi id, role, usn }
     next();
   } catch (err) {
     return res.status(401).json({ message: "Token tidak valid" });
