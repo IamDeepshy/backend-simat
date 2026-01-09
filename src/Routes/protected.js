@@ -24,9 +24,9 @@ router.get(
 
 // Change Password
 router.put(
-  "/change-password",
+  "/edit-profile",
   auth,
-  userController.changePassword
+  userController.updateProfile
 );
 
 

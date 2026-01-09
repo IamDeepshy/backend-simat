@@ -19,12 +19,14 @@ router.post("/login", async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ message: "User tidak ditemukan" });
+      return res.status(401).json({ message: "User Not Found" });
     }
 
     const isMatch = bcrypt.compareSync(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Password salah" });
+      return res.status(401).json({
+        message: "Invalid username or password",
+      });
     }
 
     const token = jwt.sign(
@@ -36,19 +38,19 @@ router.post("/login", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
     }).json({
-      message: "Login berhasil",
+      message: "Login Successful",
     });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Internal Server error" });
   }
 });
 
 
 // LOGOUT
 router.post("/logout", (req, res) => {
-  res.clearCookie("token").json({ message: "Logout berhasil" });
+  res.clearCookie("token").json({ message: "Logout Successful" });
 });
 
 // CEK LOGIN
