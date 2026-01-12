@@ -79,6 +79,7 @@ async function getActiveDefectByTestSpecId(testSpecId) {
       priority: true,
       status: true,
       created_at: true, 
+      updated_at: true, 
     },
     orderBy: { id: "desc" },
   });

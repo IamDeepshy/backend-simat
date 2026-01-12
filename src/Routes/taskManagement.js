@@ -35,4 +35,38 @@ router.get("/task-management", authMiddleware, async (req, res) => {
   }
 });
 
+// PATCH update status task
+router.patch("/task-management/:id/status", authMiddleware, async (req, res) => {
+  try {
+    // ✅ hanya DEV boleh update status
+    if (req.user.role !== "dev") {
+      return res.status(403).json({ message: "Hanya developer yang boleh update status" });
+    }
+
+    const id = Number(req.params.id);
+    const { status } = req.body;
+
+    const allowed = ["To Do", "In Progress", "Done"];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ message: "Status tidak valid" });
+    }
+
+    // ✅ DEV hanya boleh update task dia sendiri
+    const result = await prisma.task_management.updateMany({
+      where: { id, assignDev: req.user.username },
+      data: { status },
+    });
+
+    if (result.count === 0) {
+      return res.status(403).json({ message: "Task ini bukan milik kamu atau tidak ditemukan" });
+    }
+
+    return res.json({ message: "Status updated", count: result.count });
+  } catch (err) {
+    console.error("PATCH STATUS ERROR:", err);
+    return res.status(500).json({ message: "Gagal update status task" });
+  }
+});
+
+
 module.exports = router;
