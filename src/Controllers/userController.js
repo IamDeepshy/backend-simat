@@ -40,7 +40,7 @@ exports.updateProfile = async (req, res) => {
        UPDATE USERNAME
     ======================= */
     if (username && username !== user.username) {
-      // 🔴 CHECK USERNAME UNIQUENESS
+      //  CHECK USERNAME UNIQUENESS
       const existingUser = await prisma.user.findFirst({
         where: {
           username,

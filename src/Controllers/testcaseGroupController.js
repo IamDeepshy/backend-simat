@@ -5,24 +5,42 @@ const prisma = new PrismaClient();
 
 const getGroupedTestCases = async (req, res) => {
   try {
-    const tests = await prisma.test_specs.findMany({
-      orderBy: { suiteName: "asc" }
-    });
+    const { role, username } = req.user;
 
-     // ambil semua task sekaligus (biar gak N+1 query)
+    // 1️⃣ Ambil task dulu (karena DEV filter dari sini)
     const tasks = await prisma.task_management.findMany({
-      orderBy: { updated_at: "desc" }, // kalau ada multiple, yang terbaru kepilih
+      where: role === "dev"
+        ? { assignDev: username }
+        : {}, // QA ambil semua
+      orderBy: { updated_at: "desc" }
     });
 
-    // bikin map: suiteName -> task terbaru
+    // kalau DEV tapi tidak punya task → langsung kosong
+    if (role === "dev" && tasks.length === 0) {
+      return res.json([]);
+    }
+
+    // 2️⃣ Map suiteName → task terbaru
     const taskBySuiteName = new Map();
     for (const t of tasks) {
-      // kalau belum ada, set. Kalau sudah ada berarti sudah kepilih yg terbaru 
       if (!taskBySuiteName.has(t.suiteName)) {
         taskBySuiteName.set(t.suiteName, t);
       }
     }
 
+    // 3️⃣ Ambil test_specs
+    const tests = await prisma.test_specs.findMany({
+      where: role === "dev"
+        ? {
+            suiteName: {
+              in: Array.from(taskBySuiteName.keys())
+            }
+          }
+        : {},
+      orderBy: { suiteName: "asc" }
+    });
+
+    // 4️⃣ Grouping (LOGIC LAMA KAMU – AMAN)
     const grouped = {};
 
     for (const test of tests) {
@@ -45,16 +63,16 @@ const getGroupedTestCases = async (req, res) => {
         ...test,
         taskStatus: task?.status || "",
         taskId: task?.id || null,
+        assignDev: task?.assignDev || null
       });
 
       grouped[parent].totalTests++;
-
       if (test.status === "PASSED") grouped[parent].passed++;
       if (test.status === "FAILED") grouped[parent].failed++;
       if (test.status === "BROKEN") grouped[parent].broken++;
     }
 
-    // Sort child testCases biar urut 01,02,03
+    // 5️⃣ Sort child
     Object.values(grouped).forEach(group =>
       group.testCases.sort((a, b) =>
         a.suiteName.localeCompare(b.suiteName)
