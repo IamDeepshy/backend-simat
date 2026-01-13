@@ -41,35 +41,49 @@ router.get("/task-management", authMiddleware, async (req, res) => {
 // PATCH update status task
 router.patch("/task-management/:id/status", authMiddleware, async (req, res) => {
   try {
-    // hanya dev boleh update status
     if (req.user.role !== "dev") {
       return res.status(403).json({ message: "Hanya developer yang boleh update status" });
     }
 
     const id = Number(req.params.id);
-    const { status } = req.body;
+    const { status: newStatus } = req.body;
 
     const allowed = ["To Do", "In Progress", "Done"];
-    if (!allowed.includes(status)) {
+    if (!allowed.includes(newStatus)) {
       return res.status(400).json({ message: "Status tidak valid" });
     }
 
-    // dev hanya boleh update task dia sendiri
-    const result = await prisma.task_management.updateMany({
-      where: { id, assignDevId: req.user.id },
-      data: { status },
+    // ambil task lama
+    const task = await prisma.task_management.findFirst({
+      where: {
+        id,
+        assignDevId: req.user.id,
+      },
     });
 
-    if (result.count === 0) {
-      return res.status(404).json({ message: "Task ini tidak ditemukan" });
+    if (!task) {
+      return res.status(404).json({ message: "Task tidak ditemukan" });
     }
 
-    return res.json({ message: "Status updated", count: result.count });
+    // 🚫 RULE UTAMA
+    if (task.status === "Done" && newStatus !== "Done") {
+      return res.status(400).json({
+        message: "Task yang sudah Done tidak boleh dikembalikan",
+      });
+    }
+
+    await prisma.task_management.update({
+      where: { id },
+      data: { status: newStatus },
+    });
+
+    return res.json({ message: "Status updated" });
   } catch (err) {
     console.error("PATCH STATUS ERROR:", err);
     return res.status(500).json({ message: "Gagal update status task" });
   }
 });
+
 
 
 module.exports = router;
