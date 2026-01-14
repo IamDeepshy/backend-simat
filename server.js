@@ -14,6 +14,7 @@ const jenkinsRoutes = require("./src/Routes/jenkinsRoutes");
 const groupTestcaseRoutes = require("./src/Routes/groupCaseRoutes");
 const defectRoutes = require("./src/Routes/defect");
 const taskManagementRoutes = require("./src/Routes/taskManagement");
+const reopenRoutes = require("./src/Routes/reopenRoutes");
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use("/api", groupTestcaseRoutes);
 app.use("/api", defectRoutes);
 app.use("/api", taskManagementRoutes);
 app.use("/screenshots", express.static(path.join(__dirname, "screenshots")));
+app.use("/api", reopenRoutes);
 
 // LISTEN
 app.listen(3000, () =>

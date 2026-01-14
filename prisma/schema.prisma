@@ -13,22 +13,32 @@ model user {
   password   String
   role       String
   created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  updated_at DateTime @updatedAt
 
-  tasks task_management[]
+  assignedTasks task_management[] @relation("AssignedDev")
+  reopenedTasks task_management[] @relation("ReopenedBy")
 }
 
 model task_management {
-  id          Int      @id @default(autoincrement())
-  suiteName   String
-  title       String
+  id        Int    @id @default(autoincrement())
+  suiteName String
+  title     String
+
   assignDevId Int
-  assignDev   user     @relation(fields: [assignDevId], references: [id])
-  priority    String
-  status      String
-  notes       String   @db.VarChar(255) 
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  assignDev   user @relation("AssignedDev", fields: [assignDevId], references: [id])
+
+  priority String
+  status   String
+  notes    String @db.VarChar(255)
+
+  is_hidden Boolean @default(false)
+
+  reopenedAt  DateTime?
+  reopenedBy  Int?
+  reopened_by user?     @relation("ReopenedBy", fields: [reopenedBy], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model test_run {
@@ -60,6 +70,6 @@ model test_specs {
   updatedAt     DateTime @updatedAt
   specPath      String?  @db.VarChar(255)
 
-  @@index([runId], map: "test_specs_runId_fkey")
   @@unique([specPath, testName])
+  @@index([runId], map: "test_specs_runId_fkey")
 }

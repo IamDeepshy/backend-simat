@@ -1,6 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
 const { getParentTestCase } = require("../utils/groupTestcase");
-
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getGroupedTestCases = async (req, res) => {

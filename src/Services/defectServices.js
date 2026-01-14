@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const ACTIVE_STATUSES = ["To Do", "In Progress"];
+const ACTIVE_STATUSES = ["To Do", "In Progress", "Done"];
 // status yang artinya defect masih di-handle.
 
 function normalizePriority(priority) {
@@ -75,11 +75,16 @@ async function getActiveDefectByTestSpecId(testSpecId) {
       status: { in: ACTIVE_STATUSES },
     },
     select: {
+      id: true, 
       assignDev: { select: { id: true, username: true } },
       priority: true,
       status: true,
       created_at: true, 
       updated_at: true, 
+
+      reopenedAt: true,
+      reopenedBy: true,
+      reopened_by: { select: { id: true, username: true } },
     },
     orderBy: { id: "desc" },
   });
