@@ -1,8 +1,72 @@
-const userService = require("../Services/userServices");
-const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const userService = require("../Services/userServices");
+const bcrypt = require("bcryptjs");
+const SECRET_KEY = process.env.SECRET_KEY;
+const jwt = require("jsonwebtoken");
 
+// login user
+exports.login = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "User Not Found" });
+    }
+
+    const isMatch = bcrypt.compareSync(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role, username: user.username },
+      SECRET_KEY,
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+    }).json({
+      message: "Login Successful",
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
+// logout user
+exports.logout = (req, res) => { 
+  res.clearCookie("token").json({ message: "Logout Successful" });
+};
+
+// get current user info
+exports.me = async (req, res) => { 
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: {
+      id: true,
+      username: true,
+      role: true,
+    },
+  });
+
+  res.json({
+    loggedIn: true,
+    userId: user.id,
+    username: user.username,
+    role: user.role,
+  });
+};
+
+// get all developers
 exports.getDevelopers = async (req, res) => {
   try {
     const developers = await userService.getUsersByRole("dev");
@@ -13,7 +77,7 @@ exports.getDevelopers = async (req, res) => {
   }
 };
 
-
+// update user profile (username and/or password)
 exports.updateProfile = async (req, res) => {
   const userId = req.user.id;
   const {

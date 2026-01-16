@@ -30,7 +30,7 @@ const reopenTaskController = async (req, res) => {
   }
 };
 
-// PATCH /api/tasks/:id/complete (biarin dulu, fokus decision)
+// PATCH /api/tasks/:id/complete 
 const completeTaskController = async (req, res) => {
   try {
     const taskId = Number(req.params.id);
