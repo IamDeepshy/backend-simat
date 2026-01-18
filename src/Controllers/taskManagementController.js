@@ -1,9 +1,9 @@
-const service = require("../Services/taskManagementServices");
+const { getTasks, updateTaskStatus } = require("../Services/taskManagementServices");
 
 // get task controller
-exports.getTasks = async (req, res) => {
+async function getTasksController (req, res) {
   try {
-    const tasks = await service.getTasks({
+    const tasks = await getTasks({
       user: req.user, // ambil data user yang sedang login
       query: req.query, // query parameter (filter, pagination, dll)
     });
@@ -19,7 +19,7 @@ exports.getTasks = async (req, res) => {
 };
 
 // update task controller
-exports.updateTaskStatus = async (req, res) => {
+async function updateTaskStatusController (req, res) {
   try {
     // validasi role user (harus developer)
     if (req.user.role !== "dev") {
@@ -30,7 +30,7 @@ exports.updateTaskStatus = async (req, res) => {
         });
     }
 
-    await service.updateTaskStatus({
+    await updateTaskStatus({
       taskId: Number(req.params.id), // parameter ID task yang mau diupdate
       userId: req.user.id, // ID user yang melakukan update
       newStatus: req.body.status, // status baru dari request body
@@ -48,3 +48,5 @@ exports.updateTaskStatus = async (req, res) => {
     res.status(code).json({ message: err.message });
   }
 };
+
+module.exports = { getTasksController, updateTaskStatusController };

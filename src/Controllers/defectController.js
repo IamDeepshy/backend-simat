@@ -2,16 +2,20 @@ const { createDefect,   getActiveDefectByTestSpecId } = require("../Services/def
 
 async function createDefectController(req, res) {
   try {
+    // ambil payload dari req.body (data dari user)
     const result = await createDefect(req.body);
 
+    // kalau sukses, kirim response 201 created + data hasil create
     return res.status(201).json({
       message: "Defect berhasil dibuat",
       data: result,
     });
   } catch (err) {
+    // gagal
     console.error("CREATE DEFECT ERROR:", err);
 
-    return res.status(400).json({
+    // kirim response error ke user 
+    return res.status(400).json({ // 400, error input/request (bad request)
       message: err.message,
     });
   }
@@ -20,11 +24,14 @@ async function createDefectController(req, res) {
 
 async function getActiveDefectController(req, res) {
   try {
+    // ambil testSpecId dari query string
     const { testSpecId } = req.query;
+    // validasi if !testspecid return error 400
     if (!testSpecId) {
-      return res.status(400).json({ message: "testSpecId wajib dikirim" });
+      return res.status(400).json({ message: "testSpecId must be sent" });
     }
 
+    // services (get data)
     const data = await getActiveDefectByTestSpecId(testSpecId);
 
     return res.status(200).json({ data }); // data bisa null
@@ -32,6 +39,6 @@ async function getActiveDefectController(req, res) {
     console.error("GET ACTIVE DEFECT ERROR:", err.message);
     return res.status(500).json({ message: err.message });
   }
-}
+};
 
 module.exports = { createDefectController, getActiveDefectController };

@@ -1,10 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const ACTIVE_STATUSES = ["To Do", "In Progress", "Done"];
 // status yang artinya defect masih di-handle.
+const ACTIVE_STATUSES = ["To Do", "In Progress", "Done"];
 
+// normalisasi input priority
 function normalizePriority(priority) {
+  // ubah ke lowercase & trim supaya input fleksibel (" HIGH ", "High", dll)
   const v = (priority || "").toLowerCase().trim();
   if (v === "high") return "High";
   if (v === "medium") return "Medium";
@@ -12,6 +14,7 @@ function normalizePriority(priority) {
   throw new Error("Priority tidak valid");
 }
 
+// service untuk create defect 
 async function createDefect(payload) {
   const {
     testSpecId,
@@ -22,29 +25,32 @@ async function createDefect(payload) {
     notes,
   } = payload;
 
+  // validasi wajib isi: title, assignDevId, priority
   if (!title || !assignDevId || !priority) {
-    throw new Error("Field title, assign developer, priority wajib diisi");
+    throw new Error("Title, assigned developer, and priority are required");
   }
-
+  // validasi panjang karakter notes
   if (notes && notes.length > 255) {
-    throw new Error("Notes maksimal 255 karakter");
+    throw new Error("Notes must not exceed 255 characters");
   }
 
   if (!testSpecId && !testCaseId) {
-    throw new Error("testSpecId atau testCaseId wajib dikirim");
+    throw new Error("Either testSpecId or testCaseId is required");
   }
 
+  // cari test_spec untuk ambil suiteName
   const testSpec = await prisma.test_specs.findFirst({
     where: testSpecId
-      ? { id: Number(testSpecId) }
-      : { testCaseId },
+      ? { id: Number(testSpecId) } // kalau testSpecId ada, request string -> jadi number
+      : { testCaseId }, // kalau tidak ada, tidak di-number
     select: { suiteName: true },
   });
 
   if (!testSpec) {
-    throw new Error("test_specs tidak ditemukan");
+    throw new Error("test specs not found");
   }
 
+  // create -> insert record baru ke table task management
   return prisma.task_management.create({
     data: {
       suiteName: testSpec.suiteName,
@@ -57,15 +63,17 @@ async function createDefect(payload) {
   });
 }
 
+// service ambil defect aktif based on testspecid
 async function getActiveDefectByTestSpecId(testSpecId) {
-  if (!testSpecId) throw new Error("testSpecId wajib dikirim");
+  if (!testSpecId) throw new Error("testSpecId must be sent");
 
-  // ambil suiteName
+  // ambil suiteName dr test spec berdasarkan id
   const testSpec = await prisma.test_specs.findFirst({
     where: { id: Number(testSpecId) },
     select: { suiteName: true },
   });
 
+  // return null, kalau gaada
   if (!testSpec) return null;
 
   // cari defect aktif berdasarkan suiteName
@@ -87,7 +95,7 @@ async function getActiveDefectByTestSpecId(testSpecId) {
       reopenedBy: true,
       reopened_by: { select: { id: true, username: true } },
     },
-    orderBy: { id: "desc" },
+    orderBy: { id: "desc" }, // descending, ambil yg terbaru (paling besar)
   });
 
   return activeDefect;
