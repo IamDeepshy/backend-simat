@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth");
-const taskController = require("../controllers/taskManagementController");
+const taskController = require("../Controllers/taskManagementController");
 
 // GET semua task (filter via query)
 router.get(
   "/task-management",
-  authMiddleware,
-  taskController.getTasks
+  authMiddleware, // cek token & set req.user
+  taskController.getTasks // controller get task
 );
 
 // UPDATE status task
