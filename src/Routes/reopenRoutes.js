@@ -16,7 +16,7 @@ router.patch(
   reopenTaskController
 );
 
-// COMPLETE (HOLD BELUM FIX)
+// COMPLETE
 router.patch(
   "/tasks/:id/complete",
   authMiddleware,
