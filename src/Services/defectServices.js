@@ -43,7 +43,7 @@ async function createDefect(payload) {
     where: testSpecId
       ? { id: Number(testSpecId) } // kalau testSpecId ada, request string -> jadi number
       : { testCaseId }, // kalau tidak ada, tidak di-number
-    select: { suiteName: true },
+    select: { id: true, suiteName: true },
   });
 
   if (!testSpec) {
@@ -53,12 +53,13 @@ async function createDefect(payload) {
   // create -> insert record baru ke table task management
   return prisma.task_management.create({
     data: {
-      suiteName: testSpec.suiteName,
+      testSpecId: testSpec.id,         
+      suiteName: testSpec.suiteName, // untuk di ui
       title,
       assignDevId: Number(assignDevId),
       priority: normalizePriority(priority),
       status: "To Do",
-      notes: notes?.trim() || "",
+      notes: notes?.trim(),
     },
   });
 }
@@ -67,19 +68,10 @@ async function createDefect(payload) {
 async function getActiveDefectByTestSpecId(testSpecId) {
   if (!testSpecId) throw new Error("testSpecId must be sent");
 
-  // ambil suiteName dr test spec berdasarkan id
-  const testSpec = await prisma.test_specs.findFirst({
-    where: { id: Number(testSpecId) },
-    select: { suiteName: true },
-  });
-
-  // return null, kalau gaada
-  if (!testSpec) return null;
-
-  // cari defect aktif berdasarkan suiteName
+  // cari defect aktif berdasarkan spec id (fk)
   const activeDefect = await prisma.task_management.findFirst({
     where: {
-      suiteName: testSpec.suiteName,
+      testSpecId: Number(testSpecId),
       status: { in: ACTIVE_STATUSES },
       is_hidden: false,  
     },

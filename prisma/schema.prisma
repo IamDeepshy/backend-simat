@@ -33,9 +33,12 @@ model task_management {
   is_hidden   Boolean   @default(false)
   assignDev   user      @relation("AssignedDev", fields: [assignDevId], references: [id], map: "fk_task_assignDevId")
   reopened_by user?     @relation("ReopenedBy", fields: [reopenedBy], references: [id], onUpdate: NoAction, map: "fk_task_reopened_by")
+  testSpecId  Int?
+  testSpec    test_specs? @relation(fields: [testSpecId], references: [id], map: "fk_task_testSpecId")
 
   @@index([assignDevId], map: "fk_task_assignDevId")
   @@index([reopenedBy], map: "fk_task_reopened_by")
+  @@index([testSpecId])
 }
 
 model test_run {
@@ -49,6 +52,8 @@ model test_run {
   executedAt DateTime
   createdAt  DateTime     @default(now())
   test_specs test_specs[]
+
+  @@unique([scope, scopeValue], name: "scope_scopeValue")
 }
 
 model test_specs {
@@ -66,6 +71,8 @@ model test_specs {
   updatedAt     DateTime @updatedAt
   specPath      String?  @db.VarChar(255)
   test_run      test_run @relation(fields: [runId], references: [id])
+  tasks         task_management[]
 
+  @@unique([specPath, suiteName])
   @@index([runId], map: "test_specs_runId_fkey")
 }

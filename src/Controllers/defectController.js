@@ -37,7 +37,7 @@ async function getActiveDefectController(req, res) {
     return res.status(200).json({ data }); // data bisa null
   } catch (err) {
     console.error("GET ACTIVE DEFECT ERROR:", err.message);
-    return res.status(500).json({ message: err.message });
+    return res.status(400).json({ message: err.message });
   }
 };
 
