@@ -23,12 +23,7 @@ async function getBuildProgress(buildNumber) {
   const building = data.building;
   const result = data.result;
 
-   /**
-   * Heuristic progress:
-   * - 50% jika masih running
-   * - 100% jika selesai
-   * (tidak real-time step by step, hanya indikator kasar)
-   */
+  //  50% jika masih running 100% jika selesai
   let progress = building ? 50 : 100;
 
   return {

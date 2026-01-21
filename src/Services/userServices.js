@@ -1,9 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// =========================
-// GET USERS BY ROLE
-// =========================
+// Mengambil daftar user berdasarkan role tertentu
 const getUsersByRole = async (role) => {
   return prisma.user.findMany({
     where: { role },
@@ -11,18 +9,15 @@ const getUsersByRole = async (role) => {
   });
 };
 
-// =========================
-// FIND USER BY USERNAME (for login)
-// =========================
+
+// Mencari user berdasarkan username untuk login
 const findUserByUsername = async (username) => {
   return prisma.user.findUnique({
     where: { username },
   });
 };
 
-// =========================
-// GET SAFE USER (for get current user info)
-// =========================
+// Mengambil data user tanpa field sensitif (password, token, dll)
 const getSafeUserById = async (userId) => {
   return prisma.user.findUnique({
     where: { id: userId },
@@ -34,18 +29,14 @@ const getSafeUserById = async (userId) => {
   });
 };
 
-// =========================
-// GET FULL USER (for updateProfile checks)
-// =========================
+// Mengambil data user lengkap (termasuk password, token, dll) untuk update profile
 const findUserById = async (userId) => {
   return prisma.user.findUnique({
     where: { id: userId },
   });
 };
 
-// =========================
-// CHECK USERNAME UNIQUENESS (exclude current user)
-// =========================
+// Memeriksa apakah username sudah dipakai oleh user lain
 const isUsernameTaken = async (username, userIdToExclude) => {
   const existingUser = await prisma.user.findFirst({
     where: {
@@ -57,9 +48,7 @@ const isUsernameTaken = async (username, userIdToExclude) => {
   return !!existingUser;
 };
 
-// =========================
-// UPDATE USER DATA
-// =========================
+// Memperbarui data user berdasarkan userId
 const updateUserById = async (userId, updateData) => {
   return prisma.user.update({
     where: { id: userId },

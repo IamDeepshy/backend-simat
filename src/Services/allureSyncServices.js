@@ -1,15 +1,11 @@
 // Util untuk membaca & parsing hasil Allure (JSON → array test case)
 const { readAllureResults } = require("../utils/allureReader");
-
 // Prisma Client untuk akses database
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
 // Util untuk mencari file screenshot dari object test Allure sekaligus menyimpannya
 const { getScreenshotFromTest, saveAllureScreenshot  } = require("../utils/allureScreenshot");
-
 const path = require("path");
-
 // Path folder allure-results (diambil dari .env)
 const ALLURE_RESULT_DIR = process.env.ALLURE_RESULTS_PATH;
 
@@ -138,7 +134,7 @@ async function syncAllureToDatabase() {
     });
   }
 
-  console.log("✅ Allure sync finished!");
+  console.log("Allure sync finished!");
 
   // Return summary untuk response API
   return {

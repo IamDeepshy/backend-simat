@@ -2,23 +2,14 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { getLatestAllureSummary } = require("./getLatestAllure");
 
-/** saveLatestTestRun
- * Menyimpan atau memperbarui data test_run TERBARU berdasarkan hasil eksekusi Jenkins + Allure terakhir.
- * Alur kerja:
- * 1. Ambil summary Allure terbaru dari Jenkins
- * 2. Hitung status test (PASSED / FAILED)
- * 3. Simpan ke tabel test_run berdasarkan scope & target
- *
- * Menggunakan upsert agar:
- * - data untuk scope + target selalu satu
- * - rerun berikutnya hanya update record yang sama
- */
+//  Menyimpan atau memperbarui data test_run TERBARU berdasarkan hasil eksekusi Jenkins + Allure terakhir.
+
 async function saveLatestTestRun({ scope, target }) {
   console.log("saveLatestTestRun CALLED WITH:", scope, target);
 
   // Validasi parameter wajib
   if (!scope || !target) {
-    throw new Error("❌ saveLatestTestRun dipanggil TANPA scope & target");
+    throw new Error(" 'scope' and 'target' parameters are required.");
   }
 
   // Ambil summary Allure terbaru dari Jenkins

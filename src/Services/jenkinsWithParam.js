@@ -6,22 +6,12 @@ const JOB_NAME = "eksekusi-ulang";
 const JENKINS_USER = process.env.JENKINS_USER;
 const JENKINS_TOKEN = process.env.JENKINS_TOKEN;
 
-/**  normalizeSpecPath
- * Membersihkan specPath dari fragment tambahan (setelah '#').
- * Jenkins hanya membutuhkan path file spec,
- */
+// Normalisasi spec path (hilangkan bagian setelah #)
 function normalizeSpecPath(specPath) {
   if (!specPath) return null;
   return specPath.split("#")[0];
 }
-
-/** triggerRerunSpec
- * Men-trigger Jenkins job untuk menjalankan ulang satu file/spec test tertentu menggunakan parameter.
- * Alur:
- * 1. Normalisasi specPath
- * 2. Call Jenkins buildWithParameters
- * 3. Ambil queueUrl dari response header
- */
+// Mentrigger Jenkins untuk Rerun satu spec dengan parameter yang sudah di normalisasi
 async function triggerRerunSpec(specPath) {
   // Bersihkan spec path agar sesuai format Jenkins
   const cleanSpec = normalizeSpecPath(specPath);

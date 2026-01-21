@@ -8,9 +8,7 @@ const role = require("../Middleware/role");
 // Controller user
 const userController = require("../Controllers/userController");
 
-/** GET /dashboard
- * - Endpoint dashboard khusus untuk role QA
- */
+// GET /dashboard Endpoint dashboard khusus untuk role QA
 router.get(
   "/dashboard",
   authMiddleware,   // cek token & set req.user
@@ -20,9 +18,7 @@ router.get(
   }
 );
 
-/** GET /suites
- * - Endpoint untuk page dan data suites
- */
+// GET /suites Endpoint untuk page dan data suites
 router.get(
   "/suites",
   authMiddleware, //  cek token & set req.user
@@ -32,9 +28,7 @@ router.get(
   }
 );
 
-/** GET /developers
- * - Mengambil daftar user dengan role developer
- */
+// /GET /developers Mengambil daftar user dengan role developer
 router.get(
   "/developers",
   authMiddleware, // cek token & set req.user

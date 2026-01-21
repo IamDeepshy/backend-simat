@@ -1,9 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-/**
- * Ambil screenshot (attachment image) dari object test Allure
- */
+// Untuk mengambil screenshot dari object test Allure
 function getScreenshotFromTest(test) {
   if (test.attachments?.length) {
     const img = test.attachments.find(a => a.type?.includes("image"));
@@ -22,9 +20,7 @@ function getScreenshotFromTest(test) {
   return null;
 }
 
-/**
- * Simpan screenshot dari allure-results ke folder lokal
- */
+// Untuk menyimpan screenshot dari allure-results ke folder lokal
 function saveAllureScreenshot(allureResultDir, screenshotFileName) {
   if (!screenshotFileName) return null;
 
@@ -38,10 +34,10 @@ function saveAllureScreenshot(allureResultDir, screenshotFileName) {
 
   if (fs.existsSync(sourcePath)) {
     fs.copyFileSync(sourcePath, targetPath);
-    console.log("✅ Screenshot copied:", screenshotFileName);
+    console.log("Screenshot copied:", screenshotFileName);
     return targetPath;
   } else {
-    console.warn("⚠️ Screenshot not found:", sourcePath);
+    console.warn("Screenshot not found:", sourcePath);
     return null;
   }
 }

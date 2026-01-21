@@ -1,25 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 
-/**readAllureResults
- * Membaca dan mem-parse seluruh file hasil test Allure
- * dari folder allure-results menjadi array object JSON.
- *
- * Util ini digunakan sebagai sumber data mentah (raw)
- * untuk proses:
- * - sinkronisasi Allure ke database
- * - perhitungan summary test
- *
- * Catatan:
- * - Hanya file dengan akhiran `-result.json` yang dibaca
- * - File lain (attachments, environment, dll) diabaikan
- */
+// Untuk membaca file hasil test allure
 function readAllureResults() {
   const allurePath = process.env.ALLURE_RESULTS_PATH;
 
   // Pastikan path allure-results tersedia
   if (!fs.existsSync(allurePath)) {
-    throw new Error("Allure results path tidak ditemukan");
+    throw new Error("Allure results path not found: " + allurePath);
   }
 
   // Baca seluruh file dalam folder allure-results

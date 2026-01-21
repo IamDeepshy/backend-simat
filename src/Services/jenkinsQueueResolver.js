@@ -2,19 +2,11 @@ const axios = require("axios");
 
 const JENKINS_USER = process.env.JENKINS_USER;
 const JENKINS_TOKEN = process.env.JENKINS_TOKEN;
-
-/**
- * Fungsi untuk menunggu hingga Jenkins mendapat buildNumber
- * Jenkins saat trigger job TIDAK langsung memberikan build number, melainkan hanya queueUrl. 
- * Fungsi ini akan:
- * 1. Polling endpoint queue Jenkins
- * 2. Mengecek apakah executable (build) sudah tersedia
- * 3. Mengembalikan buildNumber dan buildUrl jika sudah ada
- */
+// Untuk mendapat buildNumber dari queueUrl Jenkins
 async function resolveQueue(queueUrl, retry = 20, delay = 1000) {
   // Validasi queueUrl agar tidak memanggil endpoint yang salah
   if (!queueUrl || !queueUrl.startsWith("http")) {
-    throw new Error(`❌ queueUrl tidak valid: ${queueUrl}`);
+    throw new Error(`queueUrl not valid: ${queueUrl}`);
   }
 
   // Polling Jenkins queue hingga executable tersedia
@@ -41,7 +33,7 @@ async function resolveQueue(queueUrl, retry = 20, delay = 1000) {
   }
 
   // Jika setelah retry build belum juga muncul
-  throw new Error("Queue timeout: build belum mulai");
+  throw new Error("Queue  timed out.");
 }
 
 module.exports = { resolveQueue };

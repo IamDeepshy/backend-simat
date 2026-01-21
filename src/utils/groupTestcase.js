@@ -1,13 +1,4 @@
-/** getParentTestCase
- * Mengambil kode parent test case dari suiteName / code test.
- *
- * Digunakan untuk:
- * - grouping test case di UI
- * - mengelompokkan test berdasarkan kode utama (AT-CORE-XXXX)
- *
- * Contoh:
- * - "AT-CORE-0012 Login Success" → "AT-CORE-0012"
- */
+// Mengambil kode parent testCase dari suiteName
 function getParentTestCase(code = "") {
   if (!code) return "UNKNOWN";
 
