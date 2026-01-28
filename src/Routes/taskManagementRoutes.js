@@ -3,16 +3,16 @@ const router = express.Router();
 const authMiddleware = require("../Middleware/auth");
 const { getTasksController, updateTaskStatusController } = require("../Controllers/taskManagementController");
 
-// GET semua task (filter via query)
+// GET semua issue (filter via query)
 router.get(
-  "/task-management",
+  "/issues",
   authMiddleware, // cek token & set req.user
-  getTasksController // controller get task
+  getTasksController // controller get issue
 );
 
-// UPDATE status task
+// UPDATE status issue
 router.patch(
-  "/task-management/:id/status",
+  "/issues/:id/status",
   authMiddleware,
   updateTaskStatusController
 );

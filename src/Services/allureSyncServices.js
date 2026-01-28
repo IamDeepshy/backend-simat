@@ -73,7 +73,7 @@ async function syncAllureToDatabase() {
     const testName = test.name || "UNKNOWN_TEST";
     const statusUpper =
       (test.status || "unknown").toUpperCase();
-
+    
     // Durasi test (ms)
     const durationMs =
       test.stop && test.start ? test.stop - test.start : 0;
@@ -96,6 +96,18 @@ async function syncAllureToDatabase() {
       );
     }
 
+    // Skip hook entries (before/after hooks)
+    const isHook = (name = "") =>
+      /hook/i.test(name) ||
+      /before all|after all|before each|after each/i.test(name);
+
+    if (isHook(testName)) {
+      console.log("SKIP HOOK ENTRY:", testName);
+      continue;
+    }
+
+    const testCaseId = test.testCaseId || `${specPath}::${testName}`;
+
     /** Upsert test_specs (per test case) */
     await prisma.test_specs.upsert({
       where: {
@@ -105,6 +117,7 @@ async function syncAllureToDatabase() {
         },
       },
       update: {
+        testCaseId,
         suiteName,
         testName,
         status: statusUpper,
@@ -118,7 +131,7 @@ async function syncAllureToDatabase() {
         runId: testRun.id,
       },
       create: {
-        testCaseId: test.testCaseId,
+        testCaseId,
         suiteName,
         testName,
         status: statusUpper,

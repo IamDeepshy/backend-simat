@@ -1,6 +1,6 @@
 const { getTasks, updateTaskStatus } = require("../Services/taskManagementServices");
 
-// get task controller
+// get issue controller
 async function getTasksController (req, res) {
   try {
     const tasks = await getTasks({
@@ -13,12 +13,12 @@ async function getTasksController (req, res) {
     console.error(err);
     // jika error saat mengambil data task
     res.status(500).json({ 
-      message: "Failed to retrieve task management data" 
+      message: "Failed to retrieve task data" 
     });
   }
 };
 
-// update task controller
+// update issue controller
 async function updateTaskStatusController (req, res) {
   try {
     // validasi role user (harus developer)
@@ -26,19 +26,19 @@ async function updateTaskStatusController (req, res) {
       return res
         .status(403)
         .json({ 
-          message: "Only developers are allowed to update task status" 
+          message: "Only developers are allowed to update issue status" 
         });
     }
 
     await updateTaskStatus({
-      taskId: Number(req.params.id), // parameter ID task yang mau diupdate
+      taskId: Number(req.params.id), // parameter ID issue yang mau diupdate
       userId: req.user.id, // ID user yang melakukan update
       newStatus: req.body.status, // status baru dari request body
     });
 
     // jika berhasil
     res.json({ 
-      message: "Task status successfully updated" 
+      message: "issue status successfully updated" 
     });
   } catch (err) {
     console.error("PATCH STATUS ERROR:", err);

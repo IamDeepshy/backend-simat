@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../Middleware/auth");
 const requireQA = require("../Middleware/requireQA");
-// Controller untuk reopen dan complete task
+// Controller untuk reopen dan complete issue
 const {
   completeTaskController,
   reopenTaskController,
@@ -10,18 +10,18 @@ const {
 
 // REOPEN ROUTE
 router.patch(
-  "/tasks/:id/reopen",
+  "/issues/:id/reopen",
   authMiddleware, // cek token & set req.user
   requireQA, // cek role user dari req.user (harus QA)
-  reopenTaskController // controller reopen task
+  reopenTaskController // controller reopen issue
 );
 
 // COMPLETE
 router.patch(
-  "/tasks/:id/complete",
+  "/issues/:id/complete",
   authMiddleware, // cek token & set req.user
   requireQA, // cek role user dari req.user (harus QA)
-  completeTaskController // controller complete task
+  completeTaskController // controller complete issue
 );
 
 module.exports = router;

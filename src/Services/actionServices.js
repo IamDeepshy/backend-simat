@@ -7,12 +7,12 @@ async function reopenTask(taskId, userId) {
   });
 
   if (!task) {
-    throw new Error("Task not found");
+    throw new Error("Issue not found");
   }
 
   // hanya boleh reopen kalau status Done
   if (task.status !== "Done") {
-    throw new Error("Task has not been marked as Done");
+    throw new Error("Issue has not been marked as Done");
   }
 
   return prisma.task_management.update({
@@ -34,11 +34,11 @@ async function completeTask(taskId) {
   });
 
   if (!task) {
-    throw new Error("Task not found");
+    throw new Error("Issue not found");
   }
 
   if (task.status !== "Done") {
-    throw new Error("Task has not been marked as Done");
+    throw new Error("Issue has not been marked as Done");
   }
 
   // soft hide
