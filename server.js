@@ -18,12 +18,14 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://frontend-simat.vercel.app",
   "https://frontend-simat-15mrj9khb-iamdeepshys-projects.vercel.app"
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     if (!allowedOrigins.includes(origin)) {
@@ -31,8 +33,13 @@ app.use(cors({
     }
     return callback(null, true);
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // ⬅️ INI YANG BIKIN PREFLIGHT LOLOS
 
 app.use(express.json());
 app.use(cookieParser());
