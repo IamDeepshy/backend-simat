@@ -1,10 +1,10 @@
 const express = require("express");
 // Import controller untuk Rerun trigger Jenkins
-const { rerunSpec } = require("../controllers/jenkinsController");
+const { rerunSpec } = require("../Controllers/jenkinsController");
 // Import controller untuk Resolve Queue Build Number Jenkins
-const { resolveQueueBuild } = require("../controllers/jenkinsController");
+const { resolveQueueBuild } = require("../Controllers/jenkinsController");
 // Import controller untuk mendapatkan progress build dari Jenkins
-const { getBuildProgressController } = require("../controllers/jenkinsController");
+const { getBuildProgressController } = require("../Controllers/jenkinsController");
 // Import middleware autentikasi
 const authMiddleware = require("../Middleware/auth"); 
 

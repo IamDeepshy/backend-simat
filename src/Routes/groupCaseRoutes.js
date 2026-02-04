@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // Controller untuk mengambil test case yang sudah dikelompokkan
-const { getGroupedTestCases } = require("../controllers/testcaseGroupController");
+const { getGroupedTestCases } = require("../Controllers/testcaseGroupController");
 // Middleware autentikasi untuk memastikan user sudah login
 const authMiddleware = require("../Middleware/auth");
 
