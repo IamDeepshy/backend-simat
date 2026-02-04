@@ -1,6 +1,6 @@
 const express = require("express");
 // Import controller untuk sinkronisasi data Allure ke database
-const { syncAllure } = require("../controllers/allureController");
+const { syncAllure } = require("../Controllers/allureController");
 
 const router = express.Router();
 // POST /allure/sync (INTERNAL ENDPOINT TO JENKINS)
